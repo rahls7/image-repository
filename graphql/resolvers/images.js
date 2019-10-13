@@ -39,11 +39,7 @@ module.exports = {
   },
   Mutation: {
     async uploadImage(_, { file, public }, context) {
-      const filePath = path.join(__dirname, `../../${file}`);
-      const user = checkAuth(context);
-      const fileNameArray = filePath.split("/");
-      const fileName = fileNameArray[fileNameArray.length - 1];
-      const fileDestination = `/data/${user.username}/${fileName}`;
+      const fileDestination = await getFileDestination(file, context);
       await bucket.upload(filePath, { destination: fileDestination });
       if (public) {
         await bucket.file(fileDestination).makePublic();
@@ -79,3 +75,12 @@ module.exports = {
     }
   }
 };
+
+async function getFileDestination(file, context) {
+  const filePath = path.join(__dirname, `../../${file}`);
+  const user = checkAuth(context);
+  const fileNameArray = filePath.split("/");
+  const fileName = fileNameArray[fileNameArray.length - 1];
+  const fileDestination = `/data/${user.username}/${fileName}`;
+  return fileDestination;
+}
