@@ -38,3 +38,7 @@ Ideas:
 - set price
 - discounts
 - handle money
+
+### How to set up the project:
+Add a file config.js. A template is added to the repository called config-example.js
+You will also need to create a Google Cloud account and create a bucket for google cloud storage. After that you will also need to create a service account and download the json file, name it service-account-key and add it to the root folder.
