@@ -7,18 +7,27 @@ const { bucket, bucketName } = require("../../util/storage");
 
 module.exports = {
   Query: {
-    async getImages() {
+    async getImages(_, params, context) {
       try {
-        const images = await Image.find().sort({ createdAt: -1 });
+        const user = checkAuth(context);
+        if (!user) {
+          throw new AuthenticationError(
+            "You are not logged in. Please log in to get your images."
+          );
+        }
+        const images = await Image.find({ username: user.username }).sort({
+          createdAt: -1
+        });
         return images;
       } catch (error) {
         throw new Error(error);
       }
     },
-    async getImage(_, { imageId }) {
+    async getImage(_, { imageId }, context) {
       try {
+        const user = checkAuth(context);
         const image = await Image.findById(imageId);
-        if (image) {
+        if (image && user.username === image.username) {
           return image;
         } else {
           throw new Error("Image not found");
@@ -34,7 +43,7 @@ module.exports = {
       const user = checkAuth(context);
       const fileNameArray = filePath.split("/");
       const fileName = fileNameArray[fileNameArray.length - 1];
-      const fileDestination = `/data/${fileName}`;
+      const fileDestination = `/data/${user.username}/${fileName}`;
       await bucket.upload(filePath, { destination: fileDestination });
       if (public) {
         await bucket.file(fileDestination).makePublic();
