@@ -1,6 +1,9 @@
 const { AuthenticationError } = require("apollo-server");
 const path = require("path");
 const vision = require("@google-cloud/vision");
+const fs = require("fs");
+const util = require("util");
+const readdir = util.promisify(fs.readdir);
 
 const Image = require("../../model/Image");
 const checkAuth = require("../../util/check-auth");
@@ -103,6 +106,36 @@ module.exports = {
       });
       const image = await newImage.save();
       return image;
+    },
+    async uploadDirectory(_, { dir }, context) {
+      const dirPath = path.join(__dirname, `../../${dir}`);
+      const user = checkAuth(context);
+      try {
+        console.log(dirPath);
+        const files = await readdir(dirPath);
+        const images = [];
+        for (const file of files) {
+          const filePath = `${dirPath}/${file}`;
+          const fileDestination = `/data/${user.username}/${file}`;
+          const imageUrl = `https://storage.cloud.google.com/${bucketName}${fileDestination}`;
+          const [result] = await client.labelDetection(filePath);
+          const labels = result.labelAnnotations;
+          const descriptions = [];
+          labels.forEach(label => descriptions.push(label.description));
+          const newImage = new Image({
+            imageUrl,
+            user: user.id,
+            username: user.username,
+            createdAt: new Date().toISOString(),
+            labels: descriptions
+          });
+          const image = await newImage.save();
+          images.push(image);
+        }
+        return images;
+      } catch (err) {
+        throw new Error(err);
+      }
     },
     async deleteImage(_, { imageId }, context) {
       const user = checkAuth(context);
