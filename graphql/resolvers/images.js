@@ -1,9 +1,12 @@
 const { AuthenticationError } = require("apollo-server");
 const path = require("path");
+const vision = require("@google-cloud/vision");
 
 const Image = require("../../model/Image");
 const checkAuth = require("../../util/check-auth");
 const { bucket, bucketName } = require("../../util/storage");
+
+const client = new vision.ImageAnnotatorClient();
 
 module.exports = {
   Query: {
@@ -39,7 +42,12 @@ module.exports = {
   },
   Mutation: {
     async uploadImage(_, { file, public }, context) {
-      const fileDestination = await getFileDestination(file, context);
+      const filePath = path.join(__dirname, `../../${file}`);
+      // const fileDestination = await getFileDestination(filePath, context);
+      const user = checkAuth(context);
+      const fileNameArray = filePath.split("/");
+      const fileName = fileNameArray[fileNameArray.length - 1];
+      const fileDestination = `/data/${user.username}/${fileName}`;
       await bucket.upload(filePath, { destination: fileDestination });
       if (public) {
         await bucket.file(fileDestination).makePublic();
@@ -48,11 +56,16 @@ module.exports = {
       }
       const imageUrl = `https://storage.cloud.google.com/${bucketName}${fileDestination}`;
 
+      const [result] = await client.labelDetection(filePath);
+      const labels = result.labelAnnotations;
+      const descriptions = [];
+      labels.forEach(label => descriptions.push(label.description));
       const newImage = new Image({
         imageUrl,
         user: user.id,
         username: user.username,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        labels: descriptions
       });
       const image = await newImage.save();
       return image;
@@ -76,8 +89,7 @@ module.exports = {
   }
 };
 
-async function getFileDestination(file, context) {
-  const filePath = path.join(__dirname, `../../${file}`);
+async function getFileDestination(filePath, context) {
   const user = checkAuth(context);
   const fileNameArray = filePath.split("/");
   const fileName = fileNameArray[fileNameArray.length - 1];

@@ -7,7 +7,8 @@ const imageSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: "users"
-  }
+  },
+  labels: [String]
 });
 
 module.exports = model("Image", imageSchema);

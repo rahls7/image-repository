@@ -6,6 +6,7 @@ module.exports = gql`
     imageUrl: String!
     createdAt: String!
     username: String!
+    labels: [String]!
   }
 
   type User {
