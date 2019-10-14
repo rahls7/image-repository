@@ -36,5 +36,6 @@ module.exports = gql`
     uploadImage(file: String!, public: Boolean!): Image!
     uploadDirectory(dir: String!): [Image]
     deleteImage(imageId: ID!): String!
+    deleteImages(imageIds: [ID]!): String!
   }
 `;

@@ -165,6 +165,28 @@ module.exports = {
       } catch (error) {
         throw new Error(error);
       }
+    },
+    async deleteImages(_, { imageIds }, context) {
+      const user = checkAuth(context);
+      try {
+        for (const imageId of imageIds) {
+          const image = Image.findById(imageId);
+          if (user.username === image.username) {
+            const fileNameArray = image.imageUrl.split("/");
+            const fileName = fileNameArray
+              .slice(Math.max(fileNameArray.length - 3, 1))
+              .join("/");
+            await bucket.file(fileName).delete();
+            await image.delete();
+          } else {
+            throw new AuthenticationError(
+              "You are not authorized to delete this image"
+            );
+          }
+        }
+      } catch (err) {
+        throw new Error(err);
+      }
     }
   }
 };
