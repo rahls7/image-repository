@@ -26,6 +26,8 @@ module.exports = gql`
   type Query {
     getImages: [Image]
     getImage(imageId: ID!): Image!
+    searchImage(text: String!): [Image]
+    reverseImageSearch(file: String!): [Image]
   }
 
   type Mutation {

@@ -38,6 +38,40 @@ module.exports = {
       } catch (err) {
         throw new Error(err);
       }
+    },
+
+    async searchImage(_, { text }, context) {
+      try {
+        const user = checkAuth(context);
+        const tokens = text.split(" ");
+        const images = await Image.find({ labels: { $in: tokens } });
+        if (images && user.username === images[0].username) {
+          return images;
+        } else {
+          throw new Error("Image not found");
+        }
+      } catch (err) {
+        throw new Error(err);
+      }
+    },
+
+    async reverseImageSearch(_, { file }, context) {
+      try {
+        const user = checkAuth(context);
+        const filePath = path.join(__dirname, `../../${file}`);
+        const [result] = await client.labelDetection(filePath);
+        const labels = result.labelAnnotations;
+        const descriptions = [];
+        labels.forEach(label => descriptions.push(label.description));
+        const images = await Image.find({ labels: { $in: descriptions } });
+        if (images && user.username === images[0].username) {
+          return images;
+        } else {
+          throw new Error("Image not found");
+        }
+      } catch (err) {
+        throw new Error(err);
+      }
     }
   },
   Mutation: {
