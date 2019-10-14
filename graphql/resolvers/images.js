@@ -4,6 +4,7 @@ const vision = require("@google-cloud/vision");
 const fs = require("fs");
 const util = require("util");
 const readdir = util.promisify(fs.readdir);
+const compressing = require("compressing");
 
 const Image = require("../../model/Image");
 const checkAuth = require("../../util/check-auth");
@@ -109,9 +110,9 @@ module.exports = {
     },
     async uploadDirectory(_, { dir }, context) {
       const dirPath = path.join(__dirname, `../../${dir}`);
+      const compressPath = path.join(__dirname, `../../${dir}.zip`);
       const user = checkAuth(context);
       try {
-        console.log(dirPath);
         const files = await readdir(dirPath);
         const images = [];
         for (const file of files) {
@@ -132,6 +133,11 @@ module.exports = {
           const image = await newImage.save();
           images.push(image);
         }
+
+        await compressing.zip.compressDir(dirPath, compressPath);
+        await bucket.upload(compressPath, {
+          destination: `/data/${user.username}/${dir}.zip`
+        });
         return images;
       } catch (err) {
         throw new Error(err);
@@ -142,6 +148,13 @@ module.exports = {
       try {
         const image = await Image.findById(imageId);
         if (user.username === image.username) {
+          console.log(image.imageUrl);
+          const fileNameArray = image.imageUrl.split("/");
+          const fileName = fileNameArray
+            .slice(Math.max(fileNameArray.length - 3, 1))
+            .join("/");
+          console.log(fileName);
+          await bucket.file(fileName).delete();
           await image.delete();
           return "Image Deleted";
         } else {
