@@ -176,4 +176,6 @@ mutation deleteImages(imagesIds: [1234, 12456, 0932]) {
 }
 ```
 
-### Architecture Decision.
+### Architecture Decision
+
+![](arch.jpg)
