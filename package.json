@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js",
-    "serve": "node index.js"
+    "serve": "node index.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -15,9 +15,11 @@
     "@google-cloud/storage": "^3.3.1",
     "@google-cloud/vision": "^1.5.0",
     "apollo-server": "^2.7.0",
+    "axios": "^0.19.0",
     "bcryptjs": "^2.4.3",
     "compressing": "^1.4.0",
     "graphql": "^14.4.2",
+    "jest": "^24.9.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.6.6",
     "nodemon": "^1.19.1"
