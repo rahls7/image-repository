@@ -171,8 +171,8 @@ mutation deleteImage {
 In order to delete multiple images you need to provide an array of image ids that you want deleted. You can use it as such:
 
 ```
-mutation deleteImages(imagesIds: [1234, 12456, 0932]) {
-  deleteImage(imageId:"5da4ea89fc2febbf4b44508e" )
+mutation deleteImages {
+  deleteImages(imagesIds: [1234, 12456, 0932])
 }
 ```
 
