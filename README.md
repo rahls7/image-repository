@@ -179,3 +179,15 @@ mutation deleteImages(imagesIds: [1234, 12456, 0932]) {
 ### Architecture Decision
 
 ![](arch.jpg)
+
+- Images are static and would not change/updated once stored. Hence, I was debating either storing them as a blob or storing them directly in the file system. I decided to store them in Google cloud storage bucket because it gives great isolation between data of different users. This patttern is very similar to the one Shopify may be using in order to store the data of different merchants and yet at the same time ensure isloation between their data.
+
+- Our repository structures is as such: data/username/file.jpg
+
+- Google cloud storage also gives us great access control and every file can either be public or private for that particular user which is also the desired functionality for us.
+
+- When a client uploads an image, we store all the metadata related to this image in MongoDB. This metadata includes imageUrl (stored in google cloud storage of the format storage.api.com/data/username/file.jpg), username, ref to user, labels which we get from the google cloud vision api, created at, etc
+
+- The labels from the google vision api help us with the search functionality. When searching throguh an image as well, we get label for that image and then search for labels on MongoDB. I did consider and worked on exposing our own end point to calculate the features using pre-trained models like MobileNet, which we could use to calculate labels, however the latency was too high and the time taken to resolve each requests was maginutdes higher than our current implementation.
+
+- In case of uploading a large amount of request, I was considering either a batch request, however I found that making a single request of a large zip file was better in terms of latency. In order to unzip the zip file, we make use of Google cloud function which are triggered when we upload a file. If the file is of type zip, it will run our uncompress function defined on google cloud.
