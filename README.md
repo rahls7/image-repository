@@ -108,6 +108,14 @@ The imageUrl above will only be accessed by the user who uploaded the file if pu
 
 In order to upload enormous amount of images, specify the path of the directory you wish to upload. All files inside the directory will be uploaded.
 
+```
+mutation uploadDirectory {
+  uploadDirectory(dir: "images") {
+    imageUrl
+  }
+}
+```
+
 4. You will only be able to get the images that the currently logged in user has uploaded.
    You can get the information of the image you wish to get as such:
 
