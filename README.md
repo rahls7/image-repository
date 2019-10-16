@@ -189,4 +189,6 @@ mutation deleteImages {
 
 - Add functionality for managing inventory, buy and sell images
 - Add admin user who can search through entire repository
--
+- Container the app and deploy on k8s
+- Add client to display images for users (WIP)
+- Add more test cases and reach 100% coverage
