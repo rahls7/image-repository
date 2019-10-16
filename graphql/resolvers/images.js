@@ -47,9 +47,10 @@ module.exports = {
     async searchImage(_, { text }, context) {
       try {
         const user = checkAuth(context);
-        const tokens = text.split(" ");
+        let tokens = text.split(" ");
+        tokens = tokens.map(word => word.toLowerCase());
         const images = await Image.find({ labels: { $in: tokens } });
-        if (images && user.username === images[0].username) {
+        if (images.length > 0 && user.username === images[0].username) {
           return images;
         } else {
           throw new Error("Image not found");
@@ -66,9 +67,11 @@ module.exports = {
         const [result] = await client.labelDetection(filePath);
         const labels = result.labelAnnotations;
         const descriptions = [];
-        labels.forEach(label => descriptions.push(label.description));
+        labels.forEach(label =>
+          descriptions.push(label.description.toLowerCase())
+        );
         const images = await Image.find({ labels: { $in: descriptions } });
-        if (images && user.username === images[0].username) {
+        if (images.length > 0 && user.username === images[0].username) {
           return images;
         } else {
           throw new Error("Image not found");
@@ -97,7 +100,9 @@ module.exports = {
       const [result] = await client.labelDetection(filePath);
       const labels = result.labelAnnotations;
       const descriptions = [];
-      labels.forEach(label => descriptions.push(label.description));
+      labels.forEach(label =>
+        descriptions.push(label.description.toLowerCase())
+      );
       const newImage = new Image({
         imageUrl,
         user: user.id,
@@ -122,7 +127,9 @@ module.exports = {
           const [result] = await client.labelDetection(filePath);
           const labels = result.labelAnnotations;
           const descriptions = [];
-          labels.forEach(label => descriptions.push(label.description));
+          labels.forEach(label =>
+            descriptions.push(label.description.toLowerCase())
+          );
           const newImage = new Image({
             imageUrl,
             user: user.id,
@@ -148,12 +155,10 @@ module.exports = {
       try {
         const image = await Image.findById(imageId);
         if (user.username === image.username) {
-          console.log(image.imageUrl);
           const fileNameArray = image.imageUrl.split("/");
           const fileName = fileNameArray
             .slice(Math.max(fileNameArray.length - 3, 1))
             .join("/");
-          console.log(fileName);
           await bucket.file(fileName).delete();
           await image.delete();
           return "Image Deleted";
@@ -171,7 +176,6 @@ module.exports = {
       try {
         for (const imageId of imageIds) {
           const image = await Image.findById(imageId);
-          console.log(image.username);
           if (user.username === image.username) {
             const fileNameArray = image.imageUrl.split("/");
             const fileName = fileNameArray
