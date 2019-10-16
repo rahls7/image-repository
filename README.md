@@ -37,6 +37,7 @@ Ideas:
 
 - Add a file config.js. A template is added to the repository called config-example.js
 - You will also need to create a Google Cloud account and create a bucket for google cloud storage. After that you will also need to create a service account and download the json file, name it service-account-key and add it to the root folder.
+- Please ensure to specify your project name and bucket name in config.js
 - After creating the google cloud account, you will have to enable 2 API's in google cloud i.e. Vision API and Google Cloud Function. We use vision api to assign labels to the image uploaded so as to be able to search it and google cloud function to uncompress the zip file which is used for uploading large amount of files.
 
 ### How to run the project
@@ -191,3 +192,9 @@ mutation deleteImages {
 - The labels from the google vision api help us with the search functionality. When searching throguh an image as well, we get label for that image and then search for labels on MongoDB. I did consider and worked on exposing our own end point to calculate the features using pre-trained models like MobileNet, which we could use to calculate labels, however the latency was too high and the time taken to resolve each requests was maginutdes higher than our current implementation.
 
 - In case of uploading a large amount of request, I was considering either a batch request, however I found that making a single request of a large zip file was better in terms of latency. In order to unzip the zip file, we make use of Google cloud function which are triggered when we upload a file. If the file is of type zip, it will run our uncompress function defined on google cloud.
+
+### Future Consideration
+
+- Add functionality for managing inventory, buy and sell images
+- Add admin user who can search through entire repository
+-

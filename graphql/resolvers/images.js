@@ -170,7 +170,8 @@ module.exports = {
       const user = checkAuth(context);
       try {
         for (const imageId of imageIds) {
-          const image = Image.findById(imageId);
+          const image = await Image.findById(imageId);
+          console.log(image.username);
           if (user.username === image.username) {
             const fileNameArray = image.imageUrl.split("/");
             const fileName = fileNameArray
@@ -184,6 +185,7 @@ module.exports = {
             );
           }
         }
+        return "Images deleted";
       } catch (err) {
         throw new Error(err);
       }
