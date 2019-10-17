@@ -1,8 +1,3 @@
-# shopify-image
-
-Winter 2020 - Shopify
-Developer Intern Challenge Question
-
 ### TASK: Build an image repository.
 
 Following features have been implemented
