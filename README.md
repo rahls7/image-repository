@@ -168,7 +168,7 @@ mutation deleteImages {
 
 ![](arch.jpg)
 
-- Images are static and would not change/updated once stored. Hence, I was debating either storing them as a blob or storing them directly in the file system. I decided to store them in Google cloud storage bucket because it gives great isolation between data of different users. This patttern is very similar to the one Shopify may be using in order to store the data of different merchants and yet at the same time ensure isloation between their data.
+- Images are static and would not change/updated once stored. Hence, I was debating either storing them as a blob or storing them directly in the file system. I decided to store them in Google cloud storage bucket because it gives great isolation between data of different users. This patttern is very similar to the one  may be using in order to store the data of different merchants and yet at the same time ensure isloation between their data.
 
 - Our repository structures is as such: data/username/file.jpg
 
