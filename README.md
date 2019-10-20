@@ -4,7 +4,7 @@ Following features have been implemented
 
 1. SEARCH function
 
-- from characteristics of the images
+- from characteristics of the images (like a sentence)
 - from text
 - from an image (search for similar images)
 
