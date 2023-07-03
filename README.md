@@ -1,4 +1,4 @@
-### TASK: Build an image repository.
+### Build an image repository to store and search images.
 
 Following features have been implemented
 
@@ -22,8 +22,10 @@ Following features have been implemented
 
 ### How to set up the project:
 
-- Add a file config.js. A template is added to the repository called config-example.js
+- Add a file config.js. A template is added to the repository called config-example.js. You will need a mongo database, recommendation is mongo atlas. Include the connection string in the file.
+- 
 - You will also need to create a Google Cloud account and create a bucket for google cloud storage. After that you will also need to create a service account and download the json file, name it service-account-key and add it to the root folder.
+- Create a .env file and add the path of service-account-key as a `GOOGLE_APPLICATION_CREDENTIALS` variable.
 - Please ensure to specify your project name and bucket name in config.js
 - After creating the google cloud account, you will have to enable 2 API's in google cloud i.e. Vision API and Google Cloud Function. We use vision api to assign labels to the image uploaded so as to be able to search it and google cloud function to uncompress the zip file which is used for uploading large amount of files.
 
